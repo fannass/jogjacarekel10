@@ -1,0 +1,13 @@
+{
+    "name": "MedicalTreatment",
+    "alias": "medicaltreatment",
+    "description": "Medical treatment is the management and care of a patient to combat disease or disorder. It includes all methods of preventing, diagnosing, alleviating, curing, or healing human disease or impairment, or preserving health and promoting wellness. Medical treatment involves the use of pharmaceuticals, surgery, medical devices, and other interventions to prevent, diagnose, or treat a disease or condition.",
+    "keywords": ["medicaltreatment"],
+    "priority": 0,
+    "providers": [
+        "Modules\\MedicalTreatment\\Providers\\MedicalTreatmentServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

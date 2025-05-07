@@ -1,0 +1,8 @@
+{
+    "MedicalPoint": true,
+    "MedicalCare": true,
+    "MedicalAlter": true,
+    "MedicalCost": true,
+    "MedicalCenter": true,
+    "MedicalTreatment": true
+}
