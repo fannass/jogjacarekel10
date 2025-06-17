@@ -44,7 +44,9 @@ class MedicalTreatmentController extends BackendBaseController
             'slug' => 'nullable|string|max:255',
             'type' => 'required|string|max:255',
             'intro' => 'required|string',
+            'description' => 'nullable|string',
             'benefits' => 'nullable|string',
+            'rating' => 'nullable|numeric|min:1|max:5',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
@@ -80,11 +82,12 @@ class MedicalTreatmentController extends BackendBaseController
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:unique:medicaltreatments,slug,'.$id,
+            'slug' => 'required|string|max:255|unique:medical_treatments,slug,'.$id,
             'type' => 'required|string|max:255',
             'intro' => 'required|string',
             'benefits' => 'nullable|string',
             'description' => 'nullable|string',
+            'rating' => 'nullable|numeric|min:1|max:5',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',

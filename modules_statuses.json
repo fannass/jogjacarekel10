@@ -1,8 +1,9 @@
 {
-    "MedicalPoint": true,
     "MedicalCare": true,
+    "MedicalPoint": true,
+    "MedicalCenter": true,
+    "Chatbot": true,
     "MedicalAlter": true,
     "MedicalCost": true,
-    "MedicalCenter": true,
     "MedicalTreatment": true
 }

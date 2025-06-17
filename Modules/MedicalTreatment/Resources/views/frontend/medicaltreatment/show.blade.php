@@ -1,14 +1,14 @@
 @extends('frontend.layouts.app')
 
-@section('title') {{$$module_name_singular->name}} - {{ __($module_title) }} @endsection
+@section('title') {{ $medicaltreatment->name }} - {{ __($module_title) }} @endsection
 
 @section('content')
 
 <section class="bg-gray-100 text-gray-600 py-8">
     <div class="container mx-auto flex px-5 items-center justify-center flex-col">
-        <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="{{$$module_name_singular->name}}" src="{{ asset($$module_name_singular->image) }}">
+        <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="{{ $medicaltreatment->name }}" src="{{ asset($medicaltreatment->image) }}">
         <div class="text-center lg:w-2/3 w-full">
-            <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">{{$$module_name_singular->name}}</h1>
+            <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">{{ $medicaltreatment->name }}</h1>
             <p class="mb-4 leading-relaxed">
                 <a href="{{route('frontend.'.$module_name.'.index')}}" class="bg-blue-500 text-white text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
                     {{ __($module_title) }}
@@ -18,6 +18,18 @@
         </div>
     </div>
 </section>
+
+@if($medicaltreatment->rating)
+    <div class="mb-4 text-center">
+        <span class="font-semibold dark:text-white">Rating:</span>
+        <span>
+            @for ($i = 1; $i <= 5; $i++)
+                <span class="{{ $i <= round($medicaltreatment->rating) ? 'text-yellow-400 dark:text-yellow-300' : 'text-gray-300 dark:text-gray-500' }}">&#9733;</span>
+            @endfor
+            <span class="dark:text-white">({{ number_format($medicaltreatment->rating, 1) }}/5)</span>
+        </span>
+    </div>
+@endif
 
 <section class="bg-white text-gray-600 py-8">
     <div class="container mx-auto">
@@ -33,20 +45,20 @@
                             </div>
                             <div>
                                 <h2 class="text-gray-900 text-xl title-font font-medium">Type</h2>
-                                <p class="leading-relaxed text-base">{{$$module_name_singular->type}}</p>
+                                <p class="leading-relaxed text-base">{{ $medicaltreatment->type }}</p>
                             </div>
                         </div>
                         <div class="mb-6">
                             <h2 class="text-gray-900 text-xl title-font font-medium mb-3">Description</h2>
-                            <p class="leading-relaxed text-base">{{$$module_name_singular->description}}</p>
+                            <p class="leading-relaxed text-base">{{ $medicaltreatment->description }}</p>
                         </div>
                         <div class="mb-6">
                             <h2 class="text-gray-900 text-xl title-font font-medium mb-3">Benefits</h2>
-                            <p class="leading-relaxed text-base">{{$$module_name_singular->benefits}}</p>
+                            <p class="leading-relaxed text-base">{{ $medicaltreatment->benefits }}</p>
                         </div>
                         <div class="flex items-center">
-                            <span class="text-gray-500 mr-3">Published: {{ $$module_name_singular->created_at->format('M d, Y') }}</span>
-                            <span class="text-gray-500">Last updated: {{ $$module_name_singular->updated_at->format('M d, Y') }}</span>
+                            <span class="text-gray-500 mr-3">Published: {{ $medicaltreatment->created_at->format('M d, Y') }}</span>
+                            <span class="text-gray-500">Last updated: {{ $medicaltreatment->updated_at->format('M d, Y') }}</span>
                         </div>
                     </div>
                 </div>

@@ -19,7 +19,10 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        @vite(['resources/css/app-frontend.css', 'resources/js/app-frontend.js'])
+        @vite(['resources/css/app-frontend.css', 'resources/js/app-frontend.js', 'Modules/Chatbot/resources/assets/js/app.js'])
+
+        <!-- Botman Widget -->
+        <!-- Dihapus, kembali ke sistem chatbot custom -->
 
         @livewireStyles
 
@@ -41,6 +44,7 @@
         <!-- Scripts -->
         @livewireScripts
         @stack('after-scripts')
+        @stack('scripts')
     </body>
 
 </html>

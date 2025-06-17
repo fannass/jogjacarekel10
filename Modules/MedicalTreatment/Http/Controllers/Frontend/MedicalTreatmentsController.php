@@ -18,9 +18,10 @@ class MedicalTreatmentsController extends Controller
 
     public function show($id)
     {
+        $id = decode_id($id);
         $module_title = 'Medical Treatments';
         $module_name = 'medicaltreatments';
         $medicaltreatment = MedicalTreatment::findOrFail($id);
-        return view('medicaltreatment::frontend.show', compact('module_title', 'module_name', 'medicaltreatment'));
+        return view('medicaltreatment::frontend.medicaltreatment.show', compact('module_title', 'module_name', 'medicaltreatment'));
     }
 } 

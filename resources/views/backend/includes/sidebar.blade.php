@@ -69,6 +69,18 @@ $notifications_latest = optional($notifications)->take(5);
                             <span class="nav-icon"><span class="nav-icon-bullet"></span></span> @lang('MedicalTreatment')
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('faqs.index') }}">
+                            <span class="nav-icon"><span class="nav-icon-bullet"></span></span> FAQ Chatbot
+                        </a>
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('medical-lists.index') }}">
+                                    <span class="nav-icon"><span class="nav-icon-bullet"></span></span> Medical List
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
         @endcan

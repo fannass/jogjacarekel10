@@ -13,7 +13,7 @@ class MedicalTreatment extends BaseModel
 
     protected $table = 'medical_treatments';
 
-    protected $fillable = ['name', 'slug', 'type', 'intro', 'description', 'meta_title', 'meta_description', 'meta_keywords', 'image', 'status'];
+    protected $fillable = ['name', 'slug', 'type', 'intro', 'description', 'benefits', 'meta_title', 'meta_description', 'meta_keywords', 'image', 'status', 'rating'];
 
     /**
      * Create a new factory instance for the model.

@@ -59,6 +59,18 @@
             {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-control select2')->attributes(["$required"]) }}
         </div>
     </div>
+    <div class="col-12 col-sm-4 mb-3">
+        <div class="form-group">
+            <?php
+            $field_name = 'rating';
+            $field_lable = 'Rating (1-5)';
+            $field_placeholder = 'Masukkan rating';
+            $required = '';
+            ?>
+            {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
+            {{ html()->number($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('rating', $medicaltreatment->rating ?? ''))->attributes(["step" => "0.1", "min" => "1", "max" => "5", "$required"]) }}
+        </div>
+    </div>
 </div>
 
 <div class="row">
@@ -86,7 +98,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('benefits', $medicaltreatment->benefits ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
 </div>
@@ -101,7 +113,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('description', $medicaltreatment->description ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
 </div>
