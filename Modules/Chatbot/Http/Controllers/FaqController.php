@@ -11,6 +11,7 @@ use Modules\MedicalPoint\Models\MedicalPoint;
 use Modules\MedicalCost\Models\MedicalCost;
 use Modules\MedicalAlter\Models\MedicalAlter;
 use Modules\MedicalCare\Models\MedicalCare;
+use Modules\Chatbot\Models\MedicalList;
 
 class FaqController extends Controller
 {
@@ -29,8 +30,9 @@ class FaqController extends Controller
      */
     public function create()
     {
-        $medicalTypes = $this->getAllMedicalTypes();
-        return view('chatbot::faqs.create', compact('medicalTypes'));
+        $medicalTypes = MedicalList::orderBy('name')->pluck('name');
+        $districts = $this->getDistrictsDIY();
+        return view('chatbot::faqs.create', compact('medicalTypes', 'districts'));
     }
 
     /**
@@ -40,12 +42,20 @@ class FaqController extends Controller
     {
         $request->validate([
             'medical_type' => 'required',
-            'question' => 'required',
             'answer' => 'required',
             'location_type' => 'required',
         ]);
 
-        Faq::create($request->all());
+        if (empty($request->district) && empty($request->question)) {
+            return back()->withErrors(['district' => 'Kecamatan atau Pertanyaan harus diisi minimal salah satu.'])->withInput();
+        }
+
+        $data = $request->only(['medical_type', 'answer', 'location_type', 'district', 'question']);
+        if (!empty($data['district'])) {
+            $data['question'] = $data['district'];
+        }
+
+        Faq::create($data);
 
         return redirect()->route('faqs.index')
             ->with('success', 'FAQ berhasil ditambahkan!');
@@ -66,8 +76,9 @@ class FaqController extends Controller
     public function edit($id)
     {
         $faq = Faq::findOrFail($id);
-        $medicalTypes = $this->getAllMedicalTypes();
-        return view('chatbot::faqs.edit', compact('faq', 'medicalTypes'));
+        $medicalTypes = MedicalList::orderBy('name')->pluck('name');
+        $districts = $this->getDistrictsDIY();
+        return view('chatbot::faqs.edit', compact('faq', 'medicalTypes', 'districts'));
     }
 
     /**
@@ -77,13 +88,20 @@ class FaqController extends Controller
     {
         $request->validate([
             'medical_type' => 'required',
-            'question' => 'required',
             'answer' => 'required',
             'location_type' => 'required',
         ]);
 
+        if (empty($request->district) && empty($request->question)) {
+            return back()->withErrors(['district' => 'Kecamatan atau Pertanyaan harus diisi minimal salah satu.'])->withInput();
+        }
+
         $faq = Faq::findOrFail($id);
-        $faq->update($request->all());
+        $data = $request->only(['medical_type', 'answer', 'location_type', 'district', 'question']);
+        if (!empty($data['district'])) {
+            $data['question'] = $data['district'];
+        }
+        $faq->update($data);
 
         return redirect()->route('faqs.index')
             ->with('success', 'FAQ berhasil diperbarui!');
@@ -186,5 +204,16 @@ class FaqController extends Controller
         $types = $types->concat(MedicalCare::distinct()->pluck('name'));
 
         return $types->unique()->values();
+    }
+
+    private function getDistrictsDIY()
+    {
+        return [
+            'Bantul', 'Banguntapan', 'Bantul', 'Dlingo', 'Imogiri', 'Jetis', 'Kasihan', 'Kretek', 'Pajangan', 'Pandak', 'Piyungan', 'Pleret', 'Pundong', 'Sanden', 'Sedayu', 'Sewon', 'Srandakan',
+            'Gunungkidul', 'Gedangsari', 'Girisubo', 'Karangmojo', 'Ngawen', 'Nglipar', 'Paliyan', 'Panggang', 'Patuk', 'Playen', 'Ponjong', 'Purwosari', 'Rongkop', 'Saptosari', 'Semanu', 'Semin', 'Tanjungsari', 'Tepus', 'Wonosari',
+            'Kulon Progo', 'Galur', 'Girimulyo', 'Kalibawang', 'Kokap', 'Lendah', 'Nanggulan', 'Panjatan', 'Pengasih', 'Samigaluh', 'Sentolo', 'Temon', 'Wates',
+            'Sleman', 'Berbah', 'Cangkringan', 'Depok', 'Gamping', 'Godean', 'Kalasan', 'Minggir', 'Mlati', 'Moyudan', 'Ngaglik', 'Ngemplak', 'Pakem', 'Prambanan', 'Seyegan', 'Sleman', 'Tempel', 'Turi',
+            'Yogyakarta', 'Danurejan', 'Gedongtengen', 'Gondokusuman', 'Gondomanan', 'Jetis', 'Kotagede', 'Kraton', 'Mantrijeron', 'Mergangsan', 'Ngampilan', 'Pakualaman', 'Tegalrejo', 'Umbulharjo', 'Wirobrajan',
+        ];
     }
 } 

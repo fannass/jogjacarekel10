@@ -51,7 +51,7 @@ class MedicalServiceConversation extends Conversation
             if (count($results)) {
                 $list = '';
                 foreach ($results as $item) {
-                    $list .= "- {$item->name}\n";
+                    $list .= "- {$item->answer}\n";
                 }
                 $this->say("Berikut adalah fasilitas *{$this->serviceType['label']}* yang tersedia di Kecamatan {$district}:\n{$list}");
             } else {
@@ -72,11 +72,8 @@ class MedicalServiceConversation extends Conversation
 
     public function getMedicalByTypeAndDistrict($serviceType, $district)
     {
-        return Faq::where('medical_type', $serviceType['label'])
-            ->where(function($q) use ($district) {
-                $q->where('location_type', 'like', "%{$district}%")
-                  ->orWhere('question', 'like', "%{$district}%");
-            })
+        return \Modules\Chatbot\Models\Faq::where('medical_type', $serviceType['label'])
+            ->where('question', 'like', "%{$district}%")
             ->get();
     }
 } 

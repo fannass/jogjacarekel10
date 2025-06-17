@@ -40,6 +40,10 @@
                         <td>{{ $faq->answer }}</td>
                     </tr>
                     <tr>
+                        <th>Medical List</th>
+                        <td>{{ $faq->medical_type }}</td>
+                    </tr>
+                    <tr>
                         <th>Dibuat Pada</th>
                         <td>{{ $faq->created_at->format('d F Y H:i:s') }}</td>
                     </tr>

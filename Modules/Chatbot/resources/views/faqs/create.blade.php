@@ -43,9 +43,14 @@
                     </div>
 
                     <div class="form-group mt-3">
-                        <label for="question" class="form-label">Pertanyaan Default</label>
-                        <input type="text" class="form-control @error('question') is-invalid @enderror" id="question" name="question" value="{{ old('question') }}" required>
-                        @error('question')
+                        <label for="district" class="form-label">Kecamatan</label>
+                        <select class="form-control @error('district') is-invalid @enderror" id="district" name="district" required style="max-height:200px; overflow-y:auto;">
+                            <option value="">Pilih Kecamatan</option>
+                            @foreach($districts as $district)
+                                <option value="{{ $district }}" {{ old('district') == $district ? 'selected' : '' }}>{{ $district }}</option>
+                            @endforeach
+                        </select>
+                        @error('district')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

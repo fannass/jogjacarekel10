@@ -32,6 +32,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Medical List</th>
                             <th>Question</th>
                             <th>Answer</th>
                             <th class="text-end">Action</th>
@@ -42,6 +43,7 @@
                         @foreach($faqs as $faq)
                         <tr>
                             <td>{{ $faq->id }}</td>
+                            <td>{{ $faq->medical_type }}</td>
                             <td>{{ $faq->question }}</td>
                             <td>{{ $faq->answer }}</td>
                             <td class="text-end">
