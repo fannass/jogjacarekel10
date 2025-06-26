@@ -51,6 +51,7 @@ class MedicalTreatmentController extends BackendBaseController
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keywords' => 'nullable|string',
+            'google_maps_embed' => 'nullable|string',
         ]);
 
         if ($request->hasFile('image')) {
@@ -92,6 +93,7 @@ class MedicalTreatmentController extends BackendBaseController
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keywords' => 'nullable|string',
+            'google_maps_embed' => 'nullable|string',
         ]);
 
         if ($request->hasFile('image')) {

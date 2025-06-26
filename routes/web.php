@@ -158,21 +158,3 @@ Route::get('/aboutus', [App\Http\Controllers\Frontend\FrontendController::class,
 Route::get('/contact', [App\Http\Controllers\Frontend\FrontendController::class, 'contact'])->name('frontend.contact');
 Route::post('/contact', [App\Http\Controllers\Frontend\ContactController::class, 'sendEmail'])->name('frontend.contact.send');
 Route::get('/partner', [App\Http\Controllers\Frontend\FrontendController::class, 'partner'])->name('frontend.partner');
-
-// Route::match(['get', 'post'], '/botman', function () {
-//     $botman = app('botman');
-//     $botman->hears('{message}', function (BotMan $bot, $message) {
-//         // Cari FAQ berdasarkan pesan pengguna
-//         $faq = Faq::where('question', 'LIKE', '%' . $message . '%')->first();
-//         if ($faq) {
-//             $bot->reply($faq->answer);
-//         } else {
-//             $bot->reply("Maaf, saya tidak menemukan jawaban untuk pertanyaan Anda. Silakan coba tanyakan hal lain atau hubungi kami melalui kontak yang tersedia.");
-//         }
-//     });
-//     $botman->listen();
-// })->middleware(['web']);
-
-Route::get('/botman/chat', function () {
-    return view('botman.chat');
-})->middleware(['web']);

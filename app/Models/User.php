@@ -112,5 +112,6 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'last_login',
         'last_ip',
         'login_count',
+        'username',
     ];
 }

@@ -1,3 +1,7 @@
+@php
+    $medicaltreatment = $medicaltreatment ?? $data ?? null;
+@endphp
+
 <div class="row">
     <div class="col-12 col-sm-4 mb-3">
         <div class="form-group">
@@ -8,7 +12,7 @@
             $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('name', $medicaltreatment->name ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
     <div class="col-12 col-sm-4 mb-3">
@@ -20,7 +24,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('slug', $medicaltreatment->slug ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
     <div class="col-12 col-sm-4 mb-3">
@@ -37,7 +41,7 @@
             ];
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-control select2')->attributes(["$required"]) }}
+            {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-control select2')->value(old('status', $medicaltreatment->status ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
 </div>
@@ -56,7 +60,7 @@
             ];
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-control select2')->attributes(["$required"]) }}
+            {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-control select2')->value(old('type', $medicaltreatment->type ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
     <div class="col-12 col-sm-4 mb-3">
@@ -83,7 +87,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('intro', $medicaltreatment->intro ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
 </div>
@@ -134,6 +138,21 @@
 </div>
 
 <div class="row">
+    <div class="col-12 mb-3">
+        <div class="form-group">
+            <?php
+            $field_name = 'google_maps_embed';
+            $field_lable = 'Google Maps Embed (iframe)';
+            $field_placeholder = 'Masukkan kode iframe Google Maps di sini';
+            $required = '';
+            ?>
+            {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
+            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('google_maps_embed', $medicaltreatment->google_maps_embed ?? ''))->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-12 col-sm-4 mb-3">
         <div class="form-group">
             <?php
@@ -143,7 +162,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('meta_title', $medicaltreatment->meta_title ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
     <div class="col-12 col-sm-4 mb-3">
@@ -155,7 +174,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('meta_description', $medicaltreatment->meta_description ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
     <div class="col-12 col-sm-4 mb-3">
@@ -167,7 +186,7 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! field_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->value(old('meta_keywords', $medicaltreatment->meta_keywords ?? ''))->attributes(["$required"]) }}
         </div>
     </div>
 </div>

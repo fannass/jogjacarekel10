@@ -56,6 +56,12 @@
                             <h2 class="text-gray-900 text-xl title-font font-medium mb-3">Benefits</h2>
                             <p class="leading-relaxed text-base">{{ $medicaltreatment->benefits }}</p>
                         </div>
+                        @if($medicaltreatment->google_maps_embed)
+                        <div class="mb-6">
+                            <h2 class="text-gray-900 text-xl title-font font-medium mb-3">Lokasi (Google Maps)</h2>
+                            <div class="leading-relaxed text-base">{!! $medicaltreatment->google_maps_embed !!}</div>
+                        </div>
+                        @endif
                         <div class="flex items-center">
                             <span class="text-gray-500 mr-3">Published: {{ $medicaltreatment->created_at->format('M d, Y') }}</span>
                             <span class="text-gray-500">Last updated: {{ $medicaltreatment->updated_at->format('M d, Y') }}</span>

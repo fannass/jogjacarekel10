@@ -1,158 +1,84 @@
- # Module Chatbot - FAQ Based Chatbot
+# Module Chatbot Manual - JogjaCare
 
 ## Deskripsi
-Module Chatbot adalah modul yang menyediakan fitur chatbot berbasis FAQ (Frequently Asked Questions) untuk website JogjaCare. Chatbot ini memungkinkan pengguna untuk mendapatkan jawaban cepat atas pertanyaan umum tentang layanan kesehatan di Jogja.
+Module Chatbot Manual adalah modul chatbot berbasis web yang dibangun tanpa BotMan, dengan alur multi-step, quick reply, dan basis data Medical List & FAQ. Chatbot ini membantu pengguna mencari informasi layanan medis di Jogja secara interaktif.
 
 ## Fitur Utama
-1. **Manajemen FAQ**
-   - CRUD (Create, Read, Update, Delete) untuk pertanyaan dan jawaban
-   - Dashboard admin untuk mengelola konten FAQ
-   - Validasi input untuk memastikan kualitas konten
+1. **Manajemen Medical List & FAQ**
+   - CRUD Medical List (jenis layanan medis)
+   - CRUD FAQ (pertanyaan & jawaban berdasarkan medical type & district)
+   - Dashboard admin untuk mengelola data
+2. **Widget Chatbot Manual**
+   - Widget chat bubble custom (HTML+JS)
+   - Multi-step: pilih medical type → pilih district → tampilkan jawaban FAQ
+   - Quick reply button, feedback, animasi, dan auto-scroll
+   - Riwayat chat tersimpan di session browser
 
-2. **Widget Chatbot**
-   - Tampilan widget yang responsif
-   - Integrasi dengan BotMan untuk pemrosesan pesan
-   - Pencarian jawaban berdasarkan pertanyaan pengguna
-
-## Struktur Module
+## Struktur Module (Utama)
 ```
 Modules/Chatbot/
-├── Config/
-├── Database/
-│   └── Migrations/
-│       └── create_faqs_table.php
 ├── Http/
 │   └── Controllers/
-│       └── FaqController.php
+│       └── ChatbotController.php   # Endpoint utama percakapan manual
 ├── Models/
-│   └── Faq.php
-├── Providers/
-│   ├── ChatbotServiceProvider.php
-│   ├── EventServiceProvider.php
-│   └── RouteServiceProvider.php
+│   ├── MedicalList.php            # Model jenis layanan medis
+│   └── Faq.php                    # Model FAQ
 ├── Resources/
-│   ├── assets/
-│   │   ├── js/
-│   │   │   └── app.js
-│   │   └── sass/
-│   │       └── app.scss
-│   └── views/
-│       └── faqs/
-│           ├── create.blade.php
-│           ├── edit.blade.php
-│           ├── index.blade.php
-│           └── show.blade.php
+│   ├── views/
+│   │   └── index.blade.php        # Tampilan utama chatbot manual
+│   └── assets/
+│       └── js/
+│           └── app.js             # (Opsional, jika ada asset JS lama)
+├── public/js/
+│   └── custom-chatbot.js          # Widget chat manual (frontend)
 ├── Routes/
-│   └── web.php
+│   └── web.php                    # Route endpoint chatbot manual
 └── README.md
 ```
 
+## Flow User
+1. User klik bubble chat di pojok kanan bawah.
+2. Chatbot menyapa dan menampilkan pilihan jenis layanan medis (quick reply).
+3. User memilih jenis layanan medis.
+4. Chatbot menampilkan daftar kecamatan/district (quick reply).
+5. User memilih district.
+6. Chatbot menampilkan jawaban FAQ sesuai medical type & district.
+7. User bisa memberi feedback (bermanfaat/tidak) atau mulai ulang percakapan.
+
+## Flow Admin
+1. Login ke dashboard admin.
+2. Kelola **Medical List** (tambah/edit/hapus jenis layanan medis).
+3. Kelola **FAQ** (tambah/edit/hapus pertanyaan & jawaban, kaitkan dengan medical type & district).
+4. Data medical list & FAQ otomatis digunakan oleh chatbot manual.
+
+## Konsep Program & File Utama
+- **Frontend Widget:**
+  - `public/js/custom-chatbot.js` → Widget chat bubble, window chat, quick reply, animasi, feedback, AJAX ke backend.
+  - Di-include di layout utama frontend.
+- **Backend Endpoint:**
+  - `Modules/Chatbot/Http/Controllers/ChatbotController.php` → Method `conversation()` handle alur multi-step (step 1: medical type, step 2: district, step 3: FAQ/jawaban).
+  - Route: `/chatbot/conversation` (POST)
+- **Model:**
+  - `MedicalList.php` → Jenis layanan medis
+  - `Faq.php` → FAQ (pertanyaan & jawaban, relasi medical type & district)
+- **View:**
+  - `index.blade.php` → Halaman utama chatbot manual (untuk testing atau integrasi khusus)
+
 ## Cara Penggunaan
-
-### 1. Instalasi
-Module ini sudah terintegrasi dengan Laravel Modules. Pastikan module sudah terinstall dan diaktifkan:
-```bash
-php artisan module:enable Chatbot
-```
-
-### 2. Migrasi Database
-Jalankan migrasi untuk membuat tabel FAQ:
-```bash
-php artisan module:migrate Chatbot
-```
-
-### 3. Akses Dashboard Admin
-- URL: `/admin/faqs`
-- Fitur yang tersedia:
-  - Melihat daftar FAQ
-  - Menambah FAQ baru
-  - Mengedit FAQ yang ada
-  - Menghapus FAQ
-  - Melihat detail FAQ
-
-### 4. Penggunaan Chatbot
-Chatbot akan muncul sebagai widget di halaman website. Pengguna dapat:
-1. Klik ikon chatbot untuk membuka widget
-2. Ketik pertanyaan di kolom input
-3. Chatbot akan mencari jawaban yang paling sesuai dari database FAQ
-4. Jika pertanyaan tidak ditemukan, chatbot akan memberikan pesan default
-
-## Konfigurasi
-
-### 1. Widget Chatbot
-Widget chatbot menggunakan BotMan dan dapat dikonfigurasi di:
-- `Modules/Chatbot/resources/assets/js/app.js`
-- `Modules/Chatbot/resources/assets/sass/app.scss`
-
-### 2. Route
-Route untuk chatbot dan manajemen FAQ dapat ditemukan di:
-- `Modules/Chatbot/Routes/web.php`
-
-### 3. Model dan Controller
-- Model FAQ: `Modules/Chatbot/Models/Faq.php`
-- Controller: `Modules/Chatbot/Http/Controllers/FaqController.php`
-
-## Panduan Pengembangan
-
-### Menambah FAQ Baru
-1. Login sebagai admin
-2. Akses `/admin/faqs`
-3. Klik tombol "Tambah FAQ"
-4. Isi form dengan:
-   - Pertanyaan: Pertanyaan yang sering diajukan
-   - Jawaban: Jawaban yang informatif dan jelas
-5. Klik "Simpan"
-
-### Mengedit FAQ
-1. Akses `/admin/faqs`
-2. Klik tombol edit pada FAQ yang ingin diubah
-3. Edit pertanyaan atau jawaban
-4. Klik "Update"
-
-### Menghapus FAQ
-1. Akses `/admin/faqs`
-2. Klik tombol hapus pada FAQ yang ingin dihapus
-3. Konfirmasi penghapusan
+1. **Pastikan module Chatbot aktif.**
+2. **Include** `public/js/custom-chatbot.js` di layout utama frontend.
+3. **Kelola data** medical list & FAQ via dashboard admin.
+4. **Akses website**: Widget chatbot akan muncul otomatis di pojok kanan bawah.
 
 ## Best Practices
-1. **Pertanyaan**
-   - Gunakan bahasa yang jelas dan mudah dipahami
-   - Hindari pertanyaan yang terlalu panjang
-   - Gunakan kata kunci yang relevan
-
-2. **Jawaban**
-   - Berikan jawaban yang lengkap dan informatif
-   - Gunakan format yang mudah dibaca (paragraf, bullet points)
-   - Sertakan link jika diperlukan
-
-3. **Manajemen FAQ**
-   - Kelompokkan FAQ berdasarkan kategori
-   - Perbarui FAQ secara berkala
-   - Hapus FAQ yang sudah tidak relevan
+- Gunakan pertanyaan & jawaban yang jelas, singkat, dan relevan.
+- Update medical list & FAQ secara berkala.
+- Uji alur chatbot dari sisi user untuk memastikan UX optimal.
 
 ## Troubleshooting
-1. **Widget tidak muncul**
-   - Pastikan module sudah diaktifkan
-   - Periksa console browser untuk error JavaScript
-   - Pastikan asset sudah di-compile (`npm run build`)
-
-2. **FAQ tidak tersimpan**
-   - Periksa validasi form
-   - Pastikan database terhubung
-   - Periksa permission folder storage
-
-3. **Chatbot tidak merespon**
-   - Periksa koneksi database
-   - Pastikan ada FAQ di database
-   - Periksa log Laravel untuk error
-
-## Kontribusi
-Untuk berkontribusi pada pengembangan module ini:
-1. Fork repository
-2. Buat branch fitur baru
-3. Commit perubahan
-4. Push ke branch
-5. Buat Pull Request
+- **Widget tidak muncul:** Pastikan JS sudah di-include dan cache browser dibersihkan.
+- **Data tidak muncul:** Pastikan medical list & FAQ sudah diisi di database.
+- **Chatbot tidak merespon:** Cek endpoint `/chatbot/conversation` dan koneksi database.
 
 ## Lisensi
 Module ini dilisensikan di bawah [MIT License](https://opensource.org/licenses/MIT).

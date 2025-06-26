@@ -32,4 +32,4 @@ Route::prefix('api')->group(function() {
     Route::post('/medical-by-type-location', [FaqController::class, 'getMedicalByTypeAndLocation']);
 });
 
-Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+Route::post('/chatbot/conversation', [Modules\Chatbot\Http\Controllers\ChatbotController::class, 'conversation'])->name('chatbot.conversation');

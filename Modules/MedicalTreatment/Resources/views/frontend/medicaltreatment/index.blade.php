@@ -14,10 +14,7 @@
                 Show Description
             </button>
             <p class="mb-8 leading-relaxed hidden" id="description">
-            Jogja Care's Medical Treatment service is your comprehensive solution for discovering various wellness and relaxation facilities in Yogyakarta. We provide easy access to explore diverse options, from relaxing spas, balancing acupuncture sessions, detoxifying saunas, to professional beauty clinics. All these facilities have been carefully curated to ensure visitors can enjoy optimal body and mind treatment experiences during their vacation, whether for self-indulgence during leisure time or to fulfill their health and beauty needs in Jogja.
-            <br>
-            <br>
-            Our services encompass a wide range of wellness treatments, designed to enhance your stay in Yogyakarta with rejuvenating experiences. Each facility has been selected to meet high standards of quality and service, ensuring that whether you're seeking relaxation, beauty treatments, or therapeutic services, you'll find the perfect option to suit your needs.
+            Jogja Care's Medical Treatment offers a complete solution to discover various wellness and relaxation spots in Yogyakarta. Enjoy curated options from soothing spas, acupuncture, saunas, to professional beauty clinics—perfect for your health, beauty, and relaxation needs during your holiday.
             </p>
             <p class="mb-2 leading-relaxed mt-8">
                 The list of {{ __($module_name) }}.

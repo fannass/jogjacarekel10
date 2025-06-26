@@ -19,7 +19,7 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        @vite(['resources/css/app-frontend.css', 'resources/js/app-frontend.js', 'Modules/Chatbot/resources/assets/js/app.js'])
+        @vite(['resources/css/app-frontend.css', 'resources/js/app-frontend.js'])
 
         <!-- Botman Widget -->
         <!-- Dihapus, kembali ke sistem chatbot custom -->
@@ -29,6 +29,13 @@
         @stack('after-styles')
 
         <x-google-analytics />
+
+        <style>
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        </style>
     </head>
 
     <body>
@@ -45,6 +52,7 @@
         @livewireScripts
         @stack('after-scripts')
         @stack('scripts')
+        <script src="{{ asset('js/custom-chatbot.js') }}"></script>
     </body>
 
 </html>

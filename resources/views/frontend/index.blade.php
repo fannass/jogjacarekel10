@@ -112,6 +112,23 @@
     </section>
 
     <section class="bg-white dark:bg-gray-800 text-gray-600 body-font">
+    <div class="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
+        <div class="animate-description lg:flex-grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left items-center text-center">
+            <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900 dark:text-white">Medical Treatment</h1>
+            <p class="mb-8 leading-relaxed dark:text-gray-400">
+                Jogja Care's Medical Treatment offers a complete solution to discover various wellness and relaxation spots in Yogyakarta. Enjoy curated options from soothing spas, acupuncture, saunas, to professional beauty clinics—perfect for your health, beauty, and relaxation needs during your holiday.
+            </p>
+            <div class="flex justify-center">
+                <a class="inline-flex text-white bg-blue-500 border-0 py-2 px-8 focus:outline-none hover:bg-blue-600 rounded text-lg" href="{{ route('frontend.medicaltreatments.index') }}">Read more</a>
+            </div>
+        </div>
+        <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6">
+            <img class="object-cover object-center rounded animate-smooth-bounce" alt="Medical Treatment" src="{{ asset('img/asset/medical-treatment.png') }}">
+        </div>
+    </div>
+</section>
+
+    <section class="bg-white dark:bg-gray-800 text-gray-600 body-font">
         <div class="container px-5 py-24 mx-auto">
             <div class="flex flex-col text-center w-full mb-20">
             <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900 dark:text-white">Recommended Destinations</h1>
