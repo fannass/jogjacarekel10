@@ -232,6 +232,7 @@
     let lastBotMsg = '';
     let loadingEl = null;
     let chatHistory = [];
+    let unstructuredCount = 0; // Add counter for unstructured inputs
 
     // Notifikasi bubble jika ada balasan saat window tertutup
     function showBubbleNotif() { btn.classList.add('blink'); }
@@ -366,13 +367,50 @@
             body: JSON.stringify({
                 step: stepSend,
                 medical_type: medicalType,
-                district: district
+                district: district,
+                user_input: null,
+                unstructured_count: unstructuredCount
             })
         })
         .then(res => res.json())
         .then(data => {
             hideLoading();
             step = data.step;
+            
+            // Update unstructured count from response
+            if (data.unstructured_count !== undefined) {
+                unstructuredCount = data.unstructured_count;
+            }
+            
+            // Handle live chat redirect
+            if (data.redirect_to_live_chat) {
+                handleLiveChatRedirect(data);
+                return;
+            }
+            
+            // Handle first unstructured attempt
+            if (data.step === 'unstructured_first') {
+                appendMessage(data.message, 'bot', true, null, true);
+                // Show suggestion to try again or use structured flow
+                const suggestionBtn = document.createElement('button');
+                suggestionBtn.className = 'custom-chatbot-btn-quick';
+                suggestionBtn.style.background = '#ffc107';
+                suggestionBtn.style.color = '#000';
+                suggestionBtn.style.border = '1px solid #ffc107';
+                suggestionBtn.innerHTML = '🔄 Try Structured Flow Instead';
+                suggestionBtn.onclick = function(e) {
+                    e.preventDefault();
+                    unstructuredCount = 0; // Reset counter
+                    step = 1;
+                    selectedMedical = null;
+                    selectedDistrict = null;
+                    sendToBackend(1);
+                };
+                chatButtons.innerHTML = '';
+                chatButtons.appendChild(suggestionBtn);
+                return;
+            }
+            
             if (data.message) {
                 // Step 1: greeting already handled
                 // Step 2: district selection
@@ -399,25 +437,232 @@
         });
     }
 
+    // Handle live chat redirect
+    function handleLiveChatRedirect(data) {
+        // Show message about redirecting to live chat
+        appendMessage(data.message, 'bot', true, null, true);
+        
+        // Show live chat button
+        chatButtons.innerHTML = '';
+        const liveChatBtn = document.createElement('button');
+        liveChatBtn.className = 'custom-chatbot-btn-quick';
+        liveChatBtn.style.background = '#28a745';
+        liveChatBtn.style.color = '#fff';
+        liveChatBtn.style.border = '1px solid #28a745';
+        liveChatBtn.innerHTML = '💬 Connect to Live Chat';
+        liveChatBtn.onclick = function(e) {
+            e.preventDefault();
+            redirectToTawkTo();
+        };
+        chatButtons.appendChild(liveChatBtn);
+        
+        // Auto-redirect after delay (from config or fallback)
+        const redirectDelay = data.redirect_delay || 3000;
+        setTimeout(() => {
+            redirectToTawkTo();
+        }, redirectDelay);
+    }
+
+    // Redirect to Tawk.to live chat
+    function redirectToTawkTo() {
+        // Hide our chatbot
+        win.style.display = 'none';
+        btn.style.display = 'none'; // Hide bubble button as well
+        
+        // Load Tawk.to script if not already loaded
+        if (!window.Tawk_API) {
+            loadTawkToScript();
+        } else {
+            // If Tawk.to is already loaded, maximize it
+            if (window.Tawk_API && window.Tawk_API.maximize) {
+                window.Tawk_API.maximize();
+            }
+        }
+        
+        // Show notification
+        showBubbleNotif();
+        btn.innerHTML = '💬';
+        btn.title = 'Live chat is active - Click to open';
+
+        // Add Tawk.to event listeners to show chatbot again when live chat is closed/minimized
+        setupTawkToEvents();
+    }
+
+    // Setup Tawk.to event listeners
+    function setupTawkToEvents() {
+        if (!window.Tawk_API) return;
+        // Only set up once
+        if (window.Tawk_API._customChatbotEventsSet) return;
+        window.Tawk_API._customChatbotEventsSet = true;
+
+        // When chat is minimized or ended, show chatbot again
+        window.Tawk_API.onChatMinimized = function() {
+            win.style.display = 'flex';
+            btn.style.display = 'flex';
+        };
+        window.Tawk_API.onChatEnded = function() {
+            win.style.display = 'flex';
+            btn.style.display = 'flex';
+        };
+    }
+
+    // Load Tawk.to script
+    function loadTawkToScript() {
+        // Check if script already exists
+        if (document.querySelector('script[src*="tawk.to"]')) {
+            return;
+        }
+        
+        // Fallback configuration if endpoint fails
+        const fallbackConfig = {
+            enabled: true,
+            widget_id: '68507566a1bfba190de84b28/1itt4l687',
+            auto_redirect_delay: 3000
+        };
+        
+        // Get Tawk.to configuration from backend
+        fetch('/chatbot/tawkto-config')
+            .then(res => res.json())
+            .then(data => {
+                if (data.widget_id && data.widget_id !== 'YOUR_TAWKTO_WIDGET_ID') {
+                    loadTawkToScriptWithConfig(data);
+                } else {
+                    // Use fallback config
+                    loadTawkToScriptWithConfig(fallbackConfig);
+                }
+            })
+            .catch(err => {
+                console.error('Error loading Tawk.to config:', err);
+                // Use fallback config if endpoint fails
+                loadTawkToScriptWithConfig(fallbackConfig);
+            });
+    }
+
+    // Load Tawk.to script with configuration
+    function loadTawkToScriptWithConfig(config) {
+        if (config.widget_id && config.widget_id !== 'YOUR_TAWKTO_WIDGET_ID') {
+            // Create and load Tawk.to script
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.async = true;
+            script.src = `https://embed.tawk.to/${config.widget_id}`;
+            script.charset = 'UTF-8';
+            script.setAttribute('crossorigin', '*');
+            
+            // Add Tawk.to configuration
+            window.Tawk_API = window.Tawk_API || {};
+            window.Tawk_LoadStart = new Date();
+            
+            // Auto-maximize when loaded
+            window.Tawk_API.onLoad = function() {
+                if (window.Tawk_API && window.Tawk_API.maximize) {
+                    window.Tawk_API.maximize();
+                }
+                setupTawkToEvents(); // Ensure events are set after load
+            };
+            
+            document.head.appendChild(script);
+        } else {
+            // Show error message if not configured
+            appendMessage('Live chat is not configured. Please contact support.', 'bot', true, null, true);
+        }
+    }
+
     chatForm.onsubmit = function(e) {
         e.preventDefault();
-        const val = chatInput.value.trim();
-        if (!val || val.length < 2) return;
-        appendMessage(val, 'user');
-        if (step === 1) {
-            selectedMedical = val;
-            sendToBackend(2, selectedMedical);
-        } else if (step === 2) {
-            selectedDistrict = val;
-            sendToBackend(3, selectedMedical, selectedDistrict);
+        const input = chatInput.value.trim();
+        if (!input) return;
+
+        // Add user message
+        appendMessage(input, 'user');
+        chatInput.value = '';
+
+        // Check if this is unstructured input (not following the flow)
+        if (step === 1 || step === 2) {
+            // Send unstructured input to backend
+            sendUnstructuredInput(input);
         } else {
+            // Normal flow - restart conversation
             step = 1;
             selectedMedical = null;
             selectedDistrict = null;
             sendToBackend(1);
         }
-        chatInput.value = '';
     };
+
+    // Send unstructured input to backend
+    function sendUnstructuredInput(userInput) {
+        showLoading();
+        fetch('/chatbot/conversation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                step: step,
+                medical_type: selectedMedical,
+                district: selectedDistrict,
+                user_input: userInput,
+                unstructured_count: unstructuredCount
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            hideLoading();
+            
+            // Update unstructured count from response
+            if (data.unstructured_count !== undefined) {
+                unstructuredCount = data.unstructured_count;
+            }
+            
+            // Handle live chat redirect
+            if (data.redirect_to_live_chat) {
+                handleLiveChatRedirect(data);
+                return;
+            }
+            
+            // Handle first unstructured attempt
+            if (data.step === 'unstructured_first') {
+                appendMessage(data.message, 'bot', true, null, true);
+                // Show suggestion to try again or use structured flow
+                const suggestionBtn = document.createElement('button');
+                suggestionBtn.className = 'custom-chatbot-btn-quick';
+                suggestionBtn.style.background = '#ffc107';
+                suggestionBtn.style.color = '#000';
+                suggestionBtn.style.border = '1px solid #ffc107';
+                suggestionBtn.innerHTML = '🔄 Try Structured Flow Instead';
+                suggestionBtn.onclick = function(e) {
+                    e.preventDefault();
+                    unstructuredCount = 0; // Reset counter
+                    step = 1;
+                    selectedMedical = null;
+                    selectedDistrict = null;
+                    sendToBackend(1);
+                };
+                chatButtons.innerHTML = '';
+                chatButtons.appendChild(suggestionBtn);
+                return;
+            }
+            
+            // Handle FAQ found by search
+            if (data.found_by_search) {
+                appendMessage(data.message, 'bot', true, null, true);
+                showFeedbackButtons();
+                return;
+            }
+            
+            // Continue with normal flow
+            step = data.step;
+            if (data.message) {
+                appendMessage(data.message, 'bot', true, null, true);
+                lastBotMsg = data.message;
+                if (win.style.display === 'none') showBubbleNotif();
+            }
+            if (data.buttons) showButtons(data.buttons, step+1);
+            else chatButtons.innerHTML = '';
+        });
+    }
 
     // Start conversation
     function startChat(resetHistory = false) {
@@ -428,6 +673,7 @@
         selectedMedical = null;
         selectedDistrict = null;
         lastBotMsg = '';
+        unstructuredCount = 0; // Reset unstructured counter
         if (resetHistory) {
             chatHistory = [];
             saveChat();

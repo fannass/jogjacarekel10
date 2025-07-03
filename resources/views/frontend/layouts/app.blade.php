@@ -53,6 +53,8 @@
         @stack('after-scripts')
         @stack('scripts')
         <script src="{{ asset('js/custom-chatbot.js') }}"></script>
+
+        
     </body>
 
 </html>
