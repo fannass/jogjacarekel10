@@ -120,9 +120,18 @@ class MedicalCentersController extends Controller
 
         $medicalcenter = $module_model::findOrFail($id);
 
+        // Get related centers in the same district or type (excluding current center)
+        $relatedCenters = $module_model::where('id', '!=', $medicalcenter->id)
+            ->where(function ($query) use ($medicalcenter) {
+                $query->where('district', $medicalcenter->district)
+                      ->orWhere('type', $medicalcenter->type);
+            })
+            ->take(3)
+            ->get();
+
         return response()->view(
             "$module_path.$module_name.show",
-            compact('module_title', 'module_name', 'module_icon', 'module_action', 'module_name_singular', 'medicalcenter')
+            compact('module_title', 'module_name', 'module_icon', 'module_action', 'module_name_singular', 'medicalcenter', 'relatedCenters')
         );
     }
 

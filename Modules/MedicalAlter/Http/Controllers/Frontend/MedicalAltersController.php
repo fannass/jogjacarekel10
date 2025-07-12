@@ -56,25 +56,32 @@ class MedicalAltersController extends Controller
 
         $query = $module_model::query();
 
+        // Search filter
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        // Type filter
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
+        // Sorting
         if ($request->filled('sort')) {
             if ($request->sort == 'recent') {
                 $query->orderBy('created_at', 'desc');
             } elseif ($request->sort == 'oldest') {
                 $query->orderBy('created_at', 'asc');
+            } elseif ($request->sort == 'name_asc') {
+                $query->orderBy('name', 'asc');
+            } elseif ($request->sort == 'name_desc') {
+                $query->orderBy('name', 'desc');
             }
         } else {
-            $query->orderBy('created_at', 'desc'); // Default sorting
+            $query->orderBy('name', 'asc'); // Default sorting by name
         }
 
-        $medicalalters = $query->paginate();
+        $medicalalters = $query->paginate(12);
 
         return response()->view(
             "$module_path.$module_name.index",
