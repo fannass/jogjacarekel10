@@ -158,3 +158,11 @@ Route::get('/aboutus', [App\Http\Controllers\Frontend\FrontendController::class,
 Route::get('/contact', [App\Http\Controllers\Frontend\FrontendController::class, 'contact'])->name('frontend.contact');
 Route::post('/contact', [App\Http\Controllers\Frontend\ContactController::class, 'sendEmail'])->name('frontend.contact.send');
 Route::get('/partner', [App\Http\Controllers\Frontend\FrontendController::class, 'partner'])->name('frontend.partner');
+
+// ENV TEST ROUTE
+Route::get('/env-test', function() {
+    return [
+        'APP_KEY' => env('APP_KEY'),
+        'TAWKTO_WIDGET_ID' => env('TAWKTO_WIDGET_ID'),
+    ];
+});

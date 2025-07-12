@@ -16,6 +16,9 @@ use Modules\Chatbot\Http\Controllers\MedicalListController;
 |
 */
 
+// Tawk.to configuration endpoint (HARUS DI ATAS resource route agar tidak tertangkap oleh /{id})
+Route::get('/chatbot/tawkto-config', [ChatbotController::class, 'getTawkToConfig'])->name('chatbot.tawkto-config');
+
 Route::group([], function () {
     Route::resource('chatbot', ChatbotController::class)->names('chatbot');
     Route::resource('faqs', FaqController::class);
@@ -43,7 +46,4 @@ Route::prefix('chatbot')->group(function() {
     
     // Chatbot conversation endpoint
     Route::post('/conversation', [ChatbotController::class, 'conversation'])->name('chatbot.conversation');
-    
-    // Tawk.to configuration endpoint
-    Route::get('/tawkto-config', [ChatbotController::class, 'getTawkToConfig'])->name('chatbot.tawkto-config');
 });

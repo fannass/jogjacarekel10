@@ -1,106 +1,206 @@
 @extends('frontend.layouts.app')
 
-@section('title') {{ __($module_title) }} @endsection
+@section('title') @lang("Medical Costs Hub") @endsection
 
 @section('content')
-
-<section class="bg-gray-100 text-gray-600 py-20 dark:bg-gray-700 dark:text-white">
-    <div class="container mx-auto flex px-5 items-center justify-center flex-col">
-        <div class="text-center lg:w-2/3 w-full">
-            <h1 class="text-3xl sm:text-4xl mb-4 font-medium text-gray-800 dark:text-white">
-                {{ __($module_title) }}
-            </h1>
-            <button id="descriptionBtn" class="bg-gray-200 border-gray-300 text-gray-600 px-2 mb-4 rounded-lg border dark:bg-gray-600 dark:text-white dark:bg-gray-100 dark:border-gray-200">
-                Show Description
-            </button>
-            <p class="mb-8 leading-relaxed hidden" id="description">
-            Treatment costs are a major and frequently debated aspect of healthcare systems around the world. These expenses include all financial expenses related to health maintenance, disease prevention, and treatment of medical conditions. As healthcare advances and the population ages, understanding and managing medical costs becomes increasingly important for individuals, healthcare providers, and policy makers.Essentially, medical costs include direct expenses such as doctor visits, hospital stays, prescription drugs, and diagnostic tests.<br>
-            <br>Medical expense coverage is complex and varies widely in different contexts. Factors such as geographic location, type of healthcare provider, complexity of the medical condition, and insurance coverage all play a role in determining the final cost of medical care. This variability can make it difficult for individuals to estimate and plan their health care costs, often leading to financial stress or, in some cases, avoidance of necessary medical care.
-            </p>
-            <p class="mb-2 leading-relaxed mt-8">
-                The list of {{ __($module_name) }}.
-            </p>
-
-            @include('frontend.includes.messages')
+<!-- Hero Section -->
+<section class="relative overflow-hidden bg-cover bg-center min-h-screen flex items-center" style="background-image: url('{{ asset('img/Wallpaper/wallpaperkeraton.jpg') }}');">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-blue-500/85 to-blue-800/85"></div>
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center text-white max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">@lang("Medical Costs Hub")</h1>
+            <p class="text-xl md:text-2xl mb-8">@lang("Discover transparent medical service costs and price ranges across Yogyakarta healthcare facilities")</p>
+            
+            <!-- Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-bold text-white">{{ $medicalcosts->total() }}</div>
+                    <div class="text-white/90 mt-2">@lang("Medical Services")</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-bold text-white">
+                        @if($medicalcosts->count() > 0)
+                            Rp {{ number_format($medicalcosts->avg('lowest_price'), 0, ',', '.') }}
+                        @else
+                            N/A
+                        @endif
+                    </div>
+                    <div class="text-white/90 mt-2">@lang("Avg. Starting Price")</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-bold text-white">24/7</div>
+                    <div class="text-white/90 mt-2">@lang("Price Transparency")</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="bg-white dark:bg-gray-800 text-gray-600 p-6 sm:p-20">
-    <div class="container mx-auto">
-        <form action="{{ route('frontend.medicalcosts.index') }}" method="GET" class="mb-8">
-            <div class="flex flex-wrap justify-center -mx-2">
-                <div class="w-full sm:w-1/2 md:w-2/6 px-2 mb-4">
-                    <input class="w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" placeholder="Search by name" name="search" value="{{ request('search') }}">
-                </div>
-                <div class="w-full sm:w-1/2 md:w-1/6 px-2 mb-4">
-                    <input class="w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="number" placeholder="Minimum Price" name="min_price" value="{{ request('min_price') }}">
-                </div>
-                <div class="w-full sm:w-1/2 md:w-1/6 px-2 mb-4">
-                    <input class="w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="number" placeholder="Maximum Price" name="max_price" value="{{ request('max_price') }}">
-                </div>
-                <div class="w-full sm:w-1/2 md:w-1/6 px-2 mb-4">
-                    <select class="w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" name="sort">
-                        <option value="">Sort By</option>
-                        <option value="lowest_price" {{ request('sort') == 'lowest_price' ? 'selected' : '' }}>Lowest Price</option>
-                        <option value="highest_price" {{ request('sort') == 'highest_price' ? 'selected' : '' }}>Highest Price</option>
-                    </select>
-                </div>
-                <div class="w-full sm:w-1/2 md:w-1/6 px-2 mb-4">
-                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded">
-                        Filter
-                    </button>
+<!-- Main Content -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Filters -->
+            <div class="w-full lg:w-1/4">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                    <div class="bg-blue-600 text-white p-4">
+                        <h5 class="font-bold text-lg">
+                            <i class="fas fa-filter mr-2"></i>@lang("Search & Filter")
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ route('frontend.medicalcosts.index') }}" method="GET" class="space-y-4">
+                            <!-- Search Input -->
+                            <div>
+                                <label class="block font-medium text-gray-700 dark:text-gray-300 mb-2">@lang("Search Medical Services")</label>
+                                <input type="text" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
+                                       name="search" 
+                                       value="{{ request('search') }}" 
+                                       placeholder="@lang('Enter service name...')">
+                            </div>
+
+                            <!-- Price Range -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">@lang("Min Price")</label>
+                                    <input type="number" 
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
+                                           name="min_price" 
+                                           value="{{ request('min_price') }}" 
+                                           placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">@lang("Max Price")</label>
+                                    <input type="number" 
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
+                                           name="max_price" 
+                                           value="{{ request('max_price') }}" 
+                                           placeholder="No limit">
+                                </div>
+                            </div>
+
+                            <!-- Sort Options -->
+                            <div>
+                                <label class="block font-medium text-gray-700 dark:text-gray-300 mb-2">@lang("Sort By")</label>
+                                <select class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" name="sort">
+                                    <option value="">@lang("Default")</option>
+                                    <option value="lowest_price" {{ request('sort') == 'lowest_price' ? 'selected' : '' }}>@lang("Lowest Price First")</option>
+                                    <option value="highest_price" {{ request('sort') == 'highest_price' ? 'selected' : '' }}>@lang("Highest Price First")</option>
+                                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>@lang("Name A-Z")</option>
+                                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>@lang("Name Z-A")</option>
+                                </select>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="space-y-3">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                                    <i class="fas fa-search mr-2"></i>@lang("Apply Filters")
+                                </button>
+                                <a href="{{ route('frontend.medicalcosts.index') }}" class="w-full bg-white hover:bg-gray-50 text-blue-600 border border-blue-600 font-medium py-3 px-4 rounded-lg transition-colors text-center block">
+                                    <i class="fas fa-undo mr-2"></i>@lang("Clear Filters")
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-4 py-3" style="width: 5%;">No.</th>
-                    <th scope="col" class="px-6 py-3" style="width: 45%;">Service Name</th>
-                    <th scope="col" class="px-6 py-3" style="width: 25%;">Lowest Price</th>
-                    <th scope="col" class="px-6 py-3" style="width: 25%;">Highest Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($$module_name as $index => $$module_name_singular)
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <td class="px-4 py-4">{{ $index + 1 }}</td>
-                    <td class="px-6 py-4">{{ $$module_name_singular->name }}</td>
-                    <td class="px-6 py-4">Rp {{ number_format($$module_name_singular->lowest_price, 0, ',', '.') }}</td>
-                    <td class="px-6 py-4">Rp {{ number_format($$module_name_singular->highest_price, 0, ',', '.') }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    <div class="d-flex justify-content-center w-100 mt-3">
-        {{$$module_name->links()}}
+
+            <!-- Content Area -->
+            <div class="w-full lg:w-3/4">
+                <!-- Results Header -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+                    <h4 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        @lang("Medical Costs")
+                        <span class="inline-flex items-center px-3 py-1 ml-2 text-sm font-medium text-white bg-blue-600 rounded-full">{{ $medicalcosts->total() }}</span>
+                    </h4>
+                    @if(request()->hasAny(['search', 'min_price', 'max_price']))
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">
+                            @if(request('search'))
+                                @lang("Search for"): "{{ request('search') }}"
+                            @endif
+                            @if(request('min_price'))
+                                • @lang("Min"): Rp {{ number_format(request('min_price'), 0, ',', '.') }}
+                            @endif
+                            @if(request('max_price'))
+                                • @lang("Max"): Rp {{ number_format(request('max_price'), 0, ',', '.') }}
+                            @endif
+                        </p>
+                    @endif
+                </div>
+
+                <!-- Medical Costs Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse($medicalcosts as $medicalcost)
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:transform hover:-translate-y-2 transition-all duration-300 border border-blue-100 dark:border-blue-900">
+                            <!-- Header -->
+                            <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+                                <h5 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ $medicalcost->name }}</h5>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                    <i class="fas fa-dollar-sign mr-1"></i>@lang("Medical Service")
+                                </span>
+                            </div>
+                            
+                            <!-- Price Information -->
+                            <div class="p-6">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="text-center">
+                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">@lang("Starting Price")</div>
+                                            <div class="text-lg font-bold text-blue-600">
+                                                Rp {{ number_format($medicalcost->lowest_price, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">@lang("Upper Range")</div>
+                                            <div class="text-lg font-bold text-blue-800">
+                                                Rp {{ number_format($medicalcost->highest_price, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Button -->
+                                <a href="{{ route('frontend.medicalcosts.show', [encode_id($medicalcost->id), Str::slug($medicalcost->name)]) }}" 
+                                   class="w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 px-4 rounded-lg transition-colors text-sm font-medium block">
+                                    <i class="fas fa-eye mr-1"></i>@lang("View Details")
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full">
+                            <div class="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+                                <div class="text-6xl text-gray-400 mb-6">
+                                    <i class="fas fa-search-dollar"></i>
+                                </div>
+                                <h4 class="text-2xl font-bold text-gray-500 dark:text-gray-400 mb-4">@lang("No Medical Costs Found")</h4>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                                    @if(request()->hasAny(['search', 'min_price', 'max_price']))
+                                        @lang("No costs match your search criteria. Try adjusting your filters.")
+                                    @else
+                                        @lang("No medical costs are available at the moment.")
+                                    @endif
+                                </p>
+                                @if(request()->hasAny(['search', 'min_price', 'max_price']))
+                                    <a href="{{ route('frontend.medicalcosts.index') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                        <i class="fas fa-undo mr-2"></i>@lang("Clear Filters")
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Pagination -->
+                @if($medicalcosts->hasPages())
+                    <div class="mt-12 flex justify-center">
+                        {{ $medicalcosts->links() }}
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
 </section>
 
-@endsection
-@push('after-scripts')
-<script>
-    document.getElementById('descriptionBtn').addEventListener('click', function() {
-        var description = document.getElementById('description');
-        description.classList.toggle('hidden');
-        if (!description.classList.contains('hidden')) {
-            description.style.animation = 'fadeIn 0.5s';
-        }
-        this.textContent = description.classList.contains('hidden') ? 'Show Description' : 'Hide Description';
-    });
-</script>
-@endpush
-
-@push('after-styles')
-<style>
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-@endpush
+@include('frontend.includes.messages')
+@endsection 

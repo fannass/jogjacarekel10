@@ -184,6 +184,32 @@
             border-radius: 16px 16px 10px 10px;
         }
     }
+    /* Back to Chatbot Button Styles */
+    #back-to-chatbot {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    #back-to-chatbot:hover {
+        -webkit-transform: scale(1.05);
+        transform: scale(1.05);
+    }
+    #back-to-chatbot:active {
+        -webkit-transform: scale(0.95);
+        transform: scale(0.95);
+    }
+    @media (max-width: 600px) {
+        #back-to-chatbot {
+            bottom: 20px !important;
+            right: 85px !important;
+            left: auto !important;
+            width: 44px !important;
+            height: 44px !important;
+            font-size: 1.1rem !important;
+        }
+    }
     `;
     document.head.appendChild(style);
 
@@ -192,6 +218,112 @@
     btn.id = 'custom-chatbot-btn';
     btn.innerHTML = '💬';
     document.body.appendChild(btn);
+
+    // Tambahkan tombol overlay "Kembali ke Chatbot"
+    const backToChatbotBtn = document.createElement('button');
+    backToChatbotBtn.id = 'back-to-chatbot';
+    backToChatbotBtn.innerHTML = '⬅';
+    backToChatbotBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 90px;
+        z-index: 2147483647;
+        display: none !important;
+        background: ${accentColor};
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // Hover effect
+    backToChatbotBtn.addEventListener('mouseenter', function() {
+        this.style.background = mainColor;
+        this.style.boxShadow = '0 4px 16px rgba(0,0,0,0.3)';
+        this.style.transform = 'scale(1.05)';
+    });
+    
+    backToChatbotBtn.addEventListener('mouseleave', function() {
+        this.style.background = accentColor;
+        this.style.boxShadow = '0 2px 12px rgba(0,0,0,0.2)';
+        this.style.transform = 'scale(1)';
+    });
+    
+    document.body.appendChild(backToChatbotBtn);
+    
+    // FORCE HIDE button pada saat inisialisasi
+    backToChatbotBtn.style.setProperty('display', 'none', 'important');
+
+    // Helper functions for button visibility and mobile detection
+    function isMobile() {
+        return window.innerWidth <= 600;
+    }
+
+    function showBackToChatbotButton() {
+        // Responsive positioning - samping bawah kiri widget live chat
+        if (isMobile()) {
+            // Mobile: kiri dari widget Tawk.to, ukuran lebih kecil  
+            backToChatbotBtn.style.right = '85px'; // lebih dekat ke widget
+            backToChatbotBtn.style.left = 'auto';
+            backToChatbotBtn.style.bottom = '20px'; // sedikit lebih rendah
+            backToChatbotBtn.style.width = '44px';
+            backToChatbotBtn.style.height = '44px';
+            backToChatbotBtn.style.fontSize = '1.1rem';
+        } else {
+            // Desktop: samping bawah kiri widget Tawk.to bubble  
+            backToChatbotBtn.style.right = '90px'; // lebih dekat ke widget
+            backToChatbotBtn.style.left = 'auto';
+            backToChatbotBtn.style.bottom = '20px'; // sedikit lebih rendah
+            backToChatbotBtn.style.width = '48px';
+            backToChatbotBtn.style.height = '48px';
+            backToChatbotBtn.style.fontSize = '1.2rem';
+        }
+        
+        backToChatbotBtn.style.setProperty('display', 'flex', 'important');
+        btn.style.display = 'none';
+    }
+
+    function hideBackToChatbotButton() {
+        backToChatbotBtn.style.setProperty('display', 'none', 'important');
+        btn.style.display = 'block';
+    }
+
+    function updateBackButtonVisibility() {
+        // Function to handle responsive updates
+        if (backToChatbotBtn.style.display === 'flex') {
+            showBackToChatbotButton(); // Recalculate positioning
+        }
+    }
+
+    // Add window resize listener for responsiveness
+    window.addEventListener('resize', function() {
+        updateBackButtonVisibility();
+    });
+
+    backToChatbotBtn.onclick = function() {
+        // Refresh halaman untuk kembali ke chatbot manual
+        window.location.reload();
+    };
+
+    // Variable untuk tracking status Tawk.to (dideklarasikan di atas)
+    
+    // Check jika Tawk.to sudah terbuka saat halaman dimuat  
+    document.addEventListener('DOMContentLoaded', function() {
+        // TIDAK menampilkan tombol overlay secara otomatis
+        setTimeout(function() {
+            if (window.Tawk_API && window.Tawk_API.isChatMaximized && window.Tawk_API.isChatMaximized()) {
+                // showBackToChatbotButton(); // DIHAPUS - jangan tampilkan otomatis
+            }
+        }, 2000);
+    });
 
     // Chat window
     const win = document.createElement('div');
@@ -233,6 +365,7 @@
     let loadingEl = null;
     let chatHistory = [];
     let unstructuredCount = 0; // Add counter for unstructured inputs
+    let tawkShouldMaximize = false; // Variable untuk tracking status Tawk.to
 
     // Notifikasi bubble jika ada balasan saat window tertutup
     function showBubbleNotif() { btn.classList.add('blink'); }
@@ -463,107 +596,138 @@
         }, redirectDelay);
     }
 
+    // Flag untuk antrian maximize (sudah dideklarasikan di atas)
+
     // Redirect to Tawk.to live chat
     function redirectToTawkTo() {
-        // Hide our chatbot
+        // Sembunyikan chatbot manual (bubble dan window)
         win.style.display = 'none';
-        btn.style.display = 'none'; // Hide bubble button as well
         
-        // Load Tawk.to script if not already loaded
-        if (!window.Tawk_API) {
-            loadTawkToScript();
-        } else {
-            // If Tawk.to is already loaded, maximize it
-            if (window.Tawk_API && window.Tawk_API.maximize) {
-                window.Tawk_API.maximize();
-            }
-        }
-        
-        // Show notification
-        showBubbleNotif();
-        btn.innerHTML = '💬';
-        btn.title = 'Live chat is active - Click to open';
+        // JANGAN tampilkan tombol overlay di sini - tunggu sampai live chat benar-benar terbuka
 
-        // Add Tawk.to event listeners to show chatbot again when live chat is closed/minimized
+        // Paksa reload script jika maximize tidak tersedia
+        if (!window.Tawk_API || !window.Tawk_API.maximize) {
+            tawkShouldMaximize = true;
+            loadTawkToScript(true); // true = force reload
+        } else {
+            // Jika sudah ada dan maximize tersedia, langsung maximize
+            window.Tawk_API.maximize();
+            
+            // Manual check setelah maximize untuk memastikan tombol muncul
+            setTimeout(function() {
+                showBackToChatbotButton();
+            }, 1000);
+        }
         setupTawkToEvents();
     }
 
     // Setup Tawk.to event listeners
     function setupTawkToEvents() {
         if (!window.Tawk_API) return;
-        // Only set up once
         if (window.Tawk_API._customChatbotEventsSet) return;
         window.Tawk_API._customChatbotEventsSet = true;
 
-        // When chat is minimized or ended, show chatbot again
+        // Event handlers sudah diatur di onLoad, jadi tidak perlu di sini
+        // Tambahan: update back button visibility
         window.Tawk_API.onChatMinimized = function() {
-            win.style.display = 'flex';
-            btn.style.display = 'flex';
+            // JANGAN hide tombol - biarkan tetap ada untuk refresh
         };
         window.Tawk_API.onChatEnded = function() {
-            win.style.display = 'flex';
-            btn.style.display = 'flex';
+            // JANGAN hide tombol - biarkan tetap ada untuk refresh
         };
     }
 
-    // Load Tawk.to script
-    function loadTawkToScript() {
+    function loadTawkToScript(forceReload) {
+        // Hapus script lama jika forceReload
+        if (forceReload) {
+            const oldScript = document.querySelector('script[src*="tawk.to"]');
+            if (oldScript) {
+                oldScript.parentNode.removeChild(oldScript);
+            }
+            // Hapus window.Tawk_API agar benar-benar fresh
+            window.Tawk_API = undefined;
+        }
         // Check if script already exists
         if (document.querySelector('script[src*="tawk.to"]')) {
             return;
         }
-        
         // Fallback configuration if endpoint fails
         const fallbackConfig = {
             enabled: true,
             widget_id: '68507566a1bfba190de84b28/1itt4l687',
             auto_redirect_delay: 3000
         };
-        
-        // Get Tawk.to configuration from backend
         fetch('/chatbot/tawkto-config')
-            .then(res => res.json())
+            .then(res => {
+                return res.json();
+            })
             .then(data => {
                 if (data.widget_id && data.widget_id !== 'YOUR_TAWKTO_WIDGET_ID') {
                     loadTawkToScriptWithConfig(data);
                 } else {
-                    // Use fallback config
                     loadTawkToScriptWithConfig(fallbackConfig);
                 }
             })
             .catch(err => {
-                console.error('Error loading Tawk.to config:', err);
                 // Use fallback config if endpoint fails
                 loadTawkToScriptWithConfig(fallbackConfig);
             });
     }
 
-    // Load Tawk.to script with configuration
     function loadTawkToScriptWithConfig(config) {
         if (config.widget_id && config.widget_id !== 'YOUR_TAWKTO_WIDGET_ID') {
-            // Create and load Tawk.to script
             const script = document.createElement('script');
             script.type = 'text/javascript';
             script.async = true;
             script.src = `https://embed.tawk.to/${config.widget_id}`;
             script.charset = 'UTF-8';
             script.setAttribute('crossorigin', '*');
-            
-            // Add Tawk.to configuration
+
             window.Tawk_API = window.Tawk_API || {};
             window.Tawk_LoadStart = new Date();
-            
-            // Auto-maximize when loaded
+
             window.Tawk_API.onLoad = function() {
+                // Pasang ulang event handler tombol overlay dan event Tawk.to
+                window.Tawk_API.onChatMaximized = function() {
+                    showBackToChatbotButton();
+                };
+                
+                window.Tawk_API.onChatMinimized = function() {
+                    // JANGAN hide tombol - biarkan tetap ada untuk refresh
+                };
+                
+                window.Tawk_API.onChatEnded = function() {
+                    // JANGAN hide tombol - biarkan tetap ada untuk refresh
+                };
+                
+                // Pastikan event handler tombol overlay terpasang dengan benar
+                backToChatbotBtn.onclick = function() {
+                    // Refresh halaman untuk kembali ke chatbot manual
+                    window.location.reload();
+                };
                 if (window.Tawk_API && window.Tawk_API.maximize) {
-                    window.Tawk_API.maximize();
+                    if (tawkShouldMaximize) {
+                        window.Tawk_API.maximize();
+                        tawkShouldMaximize = false;
+                        
+                        // Manual check setelah maximize untuk memastikan tombol muncul
+                        setTimeout(function() {
+                            showBackToChatbotButton();
+                        }, 1000);
+                    }
                 }
-                setupTawkToEvents(); // Ensure events are set after load
+                setupTawkToEvents();
             };
-            
+
+            script.onload = function() {
+                // Jangan tampilkan tombol overlay otomatis - tunggu user membuka live chat manual
+                if (window.Tawk_API && window.Tawk_API.isChatMaximized && window.Tawk_API.isChatMaximized()) {
+                    // showBackToChatbotButton(); // DIHAPUS - jangan tampilkan otomatis
+                }
+            };
+
             document.head.appendChild(script);
         } else {
-            // Show error message if not configured
             appendMessage('Live chat is not configured. Please contact support.', 'bot', true, null, true);
         }
     }
@@ -689,4 +853,16 @@
     } else {
         startChat();
     }
+
+    // Paksa minimize Tawk.to jika resize dari mobile ke desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 600 && window.Tawk_API && typeof window.Tawk_API.minimize === 'function') {
+            window.Tawk_API.minimize();
+        }
+    });
+    
+    // FINAL CHECK: Pastikan tombol tersembunyi saat script selesai dimuat
+    setTimeout(function() {
+        backToChatbotBtn.style.setProperty('display', 'none', 'important');
+    }, 100);
 })(); 

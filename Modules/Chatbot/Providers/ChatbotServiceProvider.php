@@ -24,7 +24,6 @@ class ChatbotServiceProvider extends ServiceProvider
         $this->registerCommands();
         $this->registerCommandSchedules();
         $this->registerTranslations();
-        $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
     }
@@ -36,6 +35,7 @@ class ChatbotServiceProvider extends ServiceProvider
     {
         $this->app->register(\Modules\Chatbot\Providers\EventServiceProvider::class);
         $this->app->register(\Modules\Chatbot\Providers\RouteServiceProvider::class);
+        $this->registerConfig();
     }
 
     /**

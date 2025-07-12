@@ -1,116 +1,294 @@
 @extends('frontend.layouts.app')
 
-@section('title') {{ __($module_title) }} @endsection
+@section('title') @lang("Medical Alternative Hub") @endsection
 
 @section('content')
-
-<section class="bg-gray-100 text-gray-600 py-20 dark:bg-gray-700 dark:text-white">
-    <div class="container mx-auto flex px-5 items-center justify-center flex-col">
-        <div class="text-center lg:w-2/3 w-full">
-            <h1 class="text-3xl sm:text-4xl mb-4 font-medium text-blue-500 dark:text-white">
-                {{ __($module_title) }}
-            </h1>
-            <button id="descriptionBtn" class="bg-gray-200 border-gray-300 text-gray-600 px-2 mb-4 rounded-lg border dark:bg-gray-600 dark:text-white dark:bg-gray-100 dark:border-gray-200">
-                Show Description
-            </button>
-            <p class="mb-8 leading-relaxed hidden" id="description">
-            Alternative and Traditional Medicine represents a variety of healing and therapeutic practices that exist alongside or as alternatives to conventional Western medicine. These approaches, deeply rooted in various cultural traditions and historical practices, offer different perspectives on health, healing, and the human body. At its core, Alternative and Traditional Medicine is characterized by a holistic approach to health. In contrast to the often compartmentalized view of Western medicine, these practices typically consider the whole person – body, mind, and spirit – as interconnected elements of health.<br>
-            <br>This holistic philosophy underlies many of the therapies and treatments in this broad category, from acupuncture and herbal medicine to meditation and energy healing.<br>
-            <br>The scope of Alternative and Traditional Medicine is very broad and varied. This includes established systems such as Traditional Chinese Medicine (TCM), which has developed over thousands of years and combines practices such as acupuncture, herbal medicine, and qi gong. Likewise, Ayurveda, an ancient Indian system of medicine, focuses on balancing the body's energy through diet, herbs, and lifestyle practices. Other prominent forms include naturopathy, homeopathy, chiropractic care, and various forms of energy therapy.
-            </p>
-            <p class="mb-2 leading-relaxed mt-8">
-                The list of {{ __($module_name) }}.
-            </p>
-
-            @include('frontend.includes.messages')
+<!-- Hero Section -->
+<section class="relative overflow-hidden bg-cover bg-center min-h-screen flex items-center" style="background-image: url('{{ asset('img/Wallpaper/wallpaperkeraton.jpg') }}');">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-blue-500/85 to-blue-800/85"></div>
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center text-white max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">@lang("Medical Alternative Hub")</h1>
+            <p class="text-xl md:text-2xl mb-8">@lang("Discover alternative and traditional medicine practices that complement conventional healthcare in Yogyakarta")</p>
+            
+            <!-- Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-bold text-white">{{ $medicalalters->total() }}</div>
+                    <div class="text-white/90 mt-2">@lang("Alternative Services")</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-bold text-white">
+                        {{ $medicalalters->pluck('type')->unique()->count() }}
+                    </div>
+                    <div class="text-white/90 mt-2">@lang("Treatment Types")</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-bold text-white">24/7</div>
+                    <div class="text-white/90 mt-2">@lang("Natural Healing")</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="bg-white dark:bg-gray-800 text-gray-600 p-6 sm:p-20">
-    <div class="container mx-auto">
-        <form action="{{ route('frontend.medicalalters.index') }}" method="GET" class="mb-8">
-            <div class="flex flex-wrap justify-center -mx-2">
-                <div class="w-full sm:w-1/2 md:w-2/5 px-2 mb-4">
-                    <input class="w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" placeholder="Search by name" name="search" value="{{ request('search') }}">
+<!-- Main Content -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Filters -->
+            <div class="w-full lg:w-1/4">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                    <div class="bg-blue-600 text-white p-4">
+                        <h5 class="font-bold text-lg">
+                            <i class="fas fa-filter mr-2"></i>@lang("Search & Filter")
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ route('frontend.medicalalters.index') }}" method="GET" class="space-y-4">
+                            <!-- Search Input -->
+                            <div>
+                                <label class="block font-medium text-gray-700 dark:text-gray-300 mb-2">@lang("Search Alternative Medicine")</label>
+                                <input type="text" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" 
+                                       name="search" 
+                                       value="{{ request('search') }}" 
+                                       placeholder="@lang('Enter treatment name...')">
+                            </div>
+
+                            <!-- Type Filter -->
+                            <div>
+                                <label class="block font-medium text-gray-700 dark:text-gray-300 mb-2">@lang("Treatment Type")</label>
+                                <select class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" name="type">
+                                    <option value="">@lang("All Types")</option>
+                                    <option value="Traditional medicine" {{ request('type') == 'Traditional medicine' ? 'selected' : '' }}>@lang("Traditional Medicine")</option>
+                                    <option value="Traditional Alternative" {{ request('type') == 'Traditional Alternative' ? 'selected' : '' }}>@lang("Traditional Alternative")</option>
+                                    <option value="Herbal Medicine" {{ request('type') == 'Herbal Medicine' ? 'selected' : '' }}>@lang("Herbal Medicine")</option>
+                                    <option value="Energy Healing" {{ request('type') == 'Energy Healing' ? 'selected' : '' }}>@lang("Energy Healing")</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort Options -->
+                            <div>
+                                <label class="block font-medium text-gray-700 dark:text-gray-300 mb-2">@lang("Sort By")</label>
+                                <select class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" name="sort">
+                                    <option value="">@lang("Default")</option>
+                                    <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>@lang("Most Recent")</option>
+                                    <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>@lang("Oldest")</option>
+                                    <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>@lang("Name A-Z")</option>
+                                    <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>@lang("Name Z-A")</option>
+                                </select>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="space-y-3">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                                    <i class="fas fa-search mr-2"></i>@lang("Apply Filters")
+                                </button>
+                                <a href="{{ route('frontend.medicalalters.index') }}" class="w-full bg-white hover:bg-gray-50 text-blue-600 border border-blue-600 font-medium py-3 px-4 rounded-lg transition-colors text-center block">
+                                    <i class="fas fa-undo mr-2"></i>@lang("Clear Filters")
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="w-full sm:w-1/2 md:w-1/5 px-2 mb-4">
-                    <select class="w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" name="type">
-                        <option value="">All Types</option>
-                        <option value="Traditional medicine" {{ request('type') == 'Traditional medicine' ? 'selected' : '' }}>Traditional medicine</option>
-                        <option value="Traditional Alternative" {{ request('type') == 'Traditional Alternative' ? 'selected' : '' }}>Traditional Alternative</option>
-                    </select>
-                </div>
-                <div class="w-full sm:w-1/2 md:w-1/5 px-2 mb-4">
-                    <select class="w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" name="sort">
-                        <option value="">Sort By</option>
-                        <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
-                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
-                    </select>
-                </div>
-                <div class="w-full sm:w-1/2 md:w-1/5 px-2 mb-4">
-                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded">
-                        Filter
-                    </button>
+
+                <!-- Info Box -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mt-6">
+                    <h6 class="font-bold text-blue-600 mb-3">
+                        <i class="fas fa-info-circle mr-2"></i>@lang("About Alternative Medicine")
+                    </h6>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                        <p>@lang("Alternative medicine practices offer complementary approaches to health and wellness:")</p>
+                        <ul class="pl-4 space-y-1">
+                            <li>• @lang("Traditional healing methods")</li>
+                            <li>• @lang("Natural and herbal remedies")</li>
+                            <li>• @lang("Holistic wellness approaches")</li>
+                            <li>• @lang("Mind-body healing techniques")</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach ($$module_name as $$module_name_singular)
-        @php
-        $details_url = route("frontend.$module_name.show",[encode_id($$module_name_singular->id), $$module_name_singular->slug]);
-        @endphp
-        
-        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col h-full relative">
-            <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
-                {{ $$module_name_singular->type }}
-            </span>
-            @if($$module_name_singular->image)
-                <img class="rounded-t-lg w-full h-48 object-cover" src="{{ asset($$module_name_singular->image) }}" alt="{{ $$module_name_singular->name }}">
-            @endif
-            <div class="p-5 flex flex-col flex-grow">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $$module_name_singular->name }}</h5>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 flex-grow overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;">
-                    {{ $$module_name_singular->intro }}
-                </p>
-                <div class="mt-auto">
-                    <a href="{{ $details_url }}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:bg-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:bg-blue-500">
-                        View Details
-                        <svg class="w-3.5 h-3.5 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                        </svg>
-                    </a>
+
+            <!-- Content Area -->
+            <div class="w-full lg:w-3/4">
+                <!-- Results Header -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+                    <h4 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        @lang("Alternative Medicine Services")
+                        <span class="inline-flex items-center px-3 py-1 ml-2 text-sm font-medium text-white bg-blue-600 rounded-full">{{ $medicalalters->total() }}</span>
+                    </h4>
+                    @if(request()->hasAny(['search', 'type', 'sort']))
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">
+                            @if(request('search'))
+                                @lang("Search for"): "{{ request('search') }}"
+                            @endif
+                            @if(request('type'))
+                                • @lang("Type"): {{ request('type') }}
+                            @endif
+                            @if(request('sort'))
+                                • @lang("Sorted by"): {{ request('sort') }}
+                            @endif
+                        </p>
+                    @endif
                 </div>
+
+                <!-- Medical Alters Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse($medicalalters as $medicalalter)
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:transform hover:-translate-y-2 transition-all duration-300 border border-blue-100 dark:border-blue-900">
+                            <!-- Image -->
+                            @if($medicalalter->image)
+                                <div class="relative">
+                                    <img src="{{ asset($medicalalter->image) }}" 
+                                         alt="{{ $medicalalter->name }}" 
+                                         class="w-full h-48 object-cover">
+                                    <div class="absolute top-3 left-3">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white">
+                                            {{ $medicalalter->type }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-leaf text-4xl text-blue-600 dark:text-blue-300 mb-2"></i>
+                                        <span class="block text-xs font-medium bg-blue-600 text-white px-3 py-1 rounded-full">
+                                            {{ $medicalalter->type }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <!-- Content -->
+                            <div class="p-6">
+                                <h5 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ $medicalalter->name }}</h5>
+                                
+                                @if($medicalalter->intro)
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
+                                        {{ Str::limit($medicalalter->intro, 120) }}
+                                    </p>
+                                @endif
+
+                                <!-- Benefits Preview -->
+                                @if($medicalalter->benefits)
+                                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mb-4">
+                                        <h6 class="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">
+                                            <i class="fas fa-heart mr-1"></i>@lang("Key Benefits")
+                                        </h6>
+                                        <p class="text-xs text-blue-800 dark:text-blue-400">
+                                            {{ Str::limit($medicalalter->benefits, 80) }}
+                                        </p>
+                                    </div>
+                                @endif
+
+                                <!-- Action Button -->
+                                <a href="{{ route('frontend.medicalalters.show', [encode_id($medicalalter->id), $medicalalter->slug]) }}" 
+                                   class="w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 px-4 rounded-lg transition-colors text-sm font-medium block">
+                                    <i class="fas fa-eye mr-1"></i>@lang("Learn More")
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full">
+                            <div class="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+                                <div class="text-6xl text-gray-400 mb-6">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <h4 class="text-2xl font-bold text-gray-500 dark:text-gray-400 mb-4">@lang("No Alternative Medicine Found")</h4>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                                    @if(request()->hasAny(['search', 'type', 'sort']))
+                                        @lang("No services match your search criteria. Try adjusting your filters.")
+                                    @else
+                                        @lang("No alternative medicine services are available at the moment.")
+                                    @endif
+                                </p>
+                                @if(request()->hasAny(['search', 'type', 'sort']))
+                                    <a href="{{ route('frontend.medicalalters.index') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                        <i class="fas fa-undo mr-2"></i>@lang("Clear Filters")
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Pagination -->
+                @if($medicalalters->hasPages())
+                    <div class="mt-12 flex justify-center">
+                        {{ $medicalalters->links() }}
+                    </div>
+                @endif
             </div>
         </div>
-        @endforeach
-    </div>
-    <div class="d-flex justify-content-center w-100 mt-3">
-        {{ $$module_name->links() }}
     </div>
 </section>
 
+@include('frontend.includes.messages')
 @endsection
-
-@push('after-scripts')
-<script>
-    document.getElementById('descriptionBtn').addEventListener('click', function() {
-        var description = document.getElementById('description');
-        description.classList.toggle('hidden');
-        if (!description.classList.contains('hidden')) {
-            description.style.animation = 'fadeIn 0.5s';
-        }
-        this.textContent = description.classList.contains('hidden') ? 'Show Description' : 'Hide Description';
-    });
-</script>
-@endpush
 
 @push('after-styles')
 <style>
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
+/* Line clamp utility */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Custom animations */
+@keyframes fade-in-down {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth transitions */
+* {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgb(37 99 235), rgb(29 78 216));
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgb(29 78 216), rgb(30 64 175));
+}
+
+/* Accessibility improvements */
+.focus\:ring-2:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgb(37 99 235);
+}
+
+/* Dark mode adjustments */
+[data-coreui-theme="dark"] .bg-white {
+    background-color: rgb(31 41 55);
+}
+
+[data-coreui-theme="dark"] .text-gray-900 {
+    color: rgb(243 244 246);
+}
 </style>
 @endpush

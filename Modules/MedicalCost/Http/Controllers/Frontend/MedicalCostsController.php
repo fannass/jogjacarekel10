@@ -73,10 +73,16 @@ class MedicalCostsController extends Controller
                 $medicalcosts->orderBy('lowest_price', 'asc');
             } elseif ($request->sort == 'highest_price') {
                 $medicalcosts->orderBy('highest_price', 'desc');
+            } elseif ($request->sort == 'name_asc') {
+                $medicalcosts->orderBy('name', 'asc');
+            } elseif ($request->sort == 'name_desc') {
+                $medicalcosts->orderBy('name', 'desc');
             }
+        } else {
+            $medicalcosts->orderBy('name', 'asc');
         }
 
-        $medicalcosts = $medicalcosts->paginate();
+        $medicalcosts = $medicalcosts->paginate(12);
 
         return response()->view(
             "$module_path.$module_name.index",
@@ -105,9 +111,28 @@ class MedicalCostsController extends Controller
 
         $medicalcost = $module_model::findOrFail($id);
 
+        // Get related medical costs with similar price ranges (excluding current cost)
+        $relatedCosts = $module_model::where('id', '!=', $medicalcost->id)
+            ->where(function($query) use ($medicalcost) {
+                $priceRange = abs($medicalcost->highest_price - $medicalcost->lowest_price);
+                $tolerance = $priceRange * 0.5; // 50% tolerance
+                
+                $query->whereBetween('lowest_price', [
+                    max(0, $medicalcost->lowest_price - $tolerance),
+                    $medicalcost->lowest_price + $tolerance
+                ])
+                ->orWhereBetween('highest_price', [
+                    max(0, $medicalcost->highest_price - $tolerance),
+                    $medicalcost->highest_price + $tolerance
+                ]);
+            })
+            ->orderBy('lowest_price', 'asc')
+            ->limit(6)
+            ->get();
+
         return response()->view(
             "$module_path.$module_name.show",
-            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', 'medicalcost')
+            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', 'medicalcost', 'relatedCosts')
         );
     }
 }
