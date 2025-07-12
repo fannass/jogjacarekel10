@@ -46,6 +46,6 @@ jobs:
 
       - name: Recreate storage symlink
         run: |
-          rm -f /home/jogjacare.my.id/public_html/public/storage
-          cd /home/jogjacare.my.id/public_html
+          rm -f /home/jogjacare10.my.id/public_html/public/storage
+          cd /home/jogjacare10.my.id/public_html
           php artisan storage:link
