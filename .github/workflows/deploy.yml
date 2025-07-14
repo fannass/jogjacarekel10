@@ -2,53 +2,38 @@ name: Deploy
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-     
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
         with:
-          node-version: "18.x"
+          node-version: '18.x'
 
-      - name: Install NPM dependencies
-        run: npm install
+      - run: npm ci
+      - run: npm run build
 
-      - name: Build frontend
-        run: npm run build
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, xml, zip, curl, gd, mysql
 
-      - name: Install Composer dependencies
-        run: |
+      - run: |
           composer install --no-dev --optimize-autoloader
           php artisan livewire:publish --assets
 
-      - name: Deploy to public_html with rsync
+      - name: Deploy to public_html
         run: |
-         rsync -av --delete \
-         --exclude='.env' \
-         --exclude='.git/' \
-         --no-perms --no-group --omit-dir-times \
-         "${{ github.workspace }}/" \
-         /home/jogjacare10.my.id/public_html/
+          rsync -av --delete --exclude='.env' --exclude='.git/' \
+          --no-perms --no-group --omit-dir-times \
+          ${{ github.workspace }}/ /home/jogjacare10.my.id/public_html/
 
-      - name: Recreate storage symlink
-        run: |
-          rm -f /home/jogjacare10.my.id/public_html/public/storage
+      - run: |
           cd /home/jogjacare10.my.id/public_html
+          rm -f public/storage
           php artisan storage:link
-
-
-      
