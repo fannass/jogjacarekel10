@@ -131,10 +131,10 @@
 <section class="bg-white dark:bg-gray-800 text-gray-600 body-font">
   <div class="container mx-auto px-5 py-24 flex flex-col items-center justify-center text-center">
     <h1 class="text-4xl font-bold mb-4 text-green-500 dark:text-green-400 animate-bounce">
-      🎉 CI/CD Deployment Berhasil!
+      🎉 CI/CD Deployment Berhasil!(selasa malam 15 juli 2025)
     </h1>
     <p class="mb-8 leading-relaxed max-w-xl dark:text-gray-300">
-      Versi terbaru dari aplikasi berhasil dideploy melalui GitHub Actions. Kamu bisa lanjut melakukan pengujian atau kembali ke halaman utama.
+      Versi terbaru dari aplikasi berhasil dideploy melalui GitHub Actions. zufar klaten
     </p>
     <a href="/" class="inline-flex text-white bg-green-500 border-0 py-2 px-8 focus:outline-none hover:bg-green-600 rounded text-lg">
       Kembali ke Beranda
