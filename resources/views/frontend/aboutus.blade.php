@@ -172,9 +172,9 @@
     </div>
     <div class="p-4 lg:w-1/6 md:w-1/3 sm:w-1/2">
         <div class="h-full flex flex-col items-center text-center">
-        <img alt="team" class="flex-shrink-0 rounded-lg w-full h-40 object-cover object-center mb-4" src="img/profile/mac.jpg">
+        <img alt="team" class="flex-shrink-0 rounded-lg w-full h-40 object-cover object-center mb-4" src="img/profile/aku.jpg">
         <div class="w-full">
-        <h2 class="title-font font-medium text-lg text-gray-900 dark:text-white">MCALLISTER</h2>
+        <h2 class="title-font font-medium text-lg text-gray-900 dark:text-white">Fauzan Annas H.</h2>
         <h3 class="text-gray-500 dark:text-gray-300 mb-3">Programmer</h3>
         <p class="mb-4 px-2 dark:text-gray-100 text-sm h-16">"We're told to be ourselves, but judged by someone else's standards."</p>
         <span class="inline-flex">
