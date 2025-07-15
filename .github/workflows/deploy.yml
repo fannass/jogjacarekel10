@@ -1,39 +1,53 @@
-name: Deploy
+name: AutoDeploy
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
-  deploy:
+  release-app:
     runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v2
+      # Ambil kode dari repositori
+      - name: Ambil kode sumber
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      # Siapkan environment Node.js
+      - name: Siapkan Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '18'
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install dependensi & build project
+        run: |
+          npm ci
+          npm run build
 
-      - uses: shivammathur/setup-php@v2
+      # Siapkan environment PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, xml, zip, curl, gd, mysql
 
-      - run: |
+      - name: Optimalkan aplikasi Laravel
+        run: |
           composer install --no-dev --optimize-autoloader
           php artisan livewire:publish --assets
 
-      - name: Deploy to public_html
+      # Upload hasil build ke server
+      - name: Sinkronisasi ke direktori server
         run: |
-          rsync -av --delete --exclude='.env' --exclude='.git/' \
-          --no-perms --no-group --omit-dir-times \
-          ${{ github.workspace }}/ /home/jogjacare10.my.id/public_html/
+          rsync -avz --delete \
+            --exclude='.env' --exclude='.git/' \
+            --no-perms --no-group --omit-dir-times \
+            ${{ github.workspace }}/ /home/jogjacare10.my.id/public_html/
 
-      - run: |
+      # Buat symbolic link storage
+      - name: Finalisasi & tautan storage
+        run: |
           cd /home/jogjacare10.my.id/public_html
           rm -f public/storage
           php artisan storage:link
