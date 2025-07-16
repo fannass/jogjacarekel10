@@ -81,6 +81,16 @@
                 <button class="flex mx-auto mt-6 text-white bg-blue-500 border-0 py-2 px-5 focus:outline-none hover:bg-blue-600 rounded">Visit Page</button>
             </div>
             </div>
+            <div class="sm:w-1/2 mb-10 px-4">
+                <div class="rounded-lg h-573px overflow-hidden relative border border-gray-300">
+                    <img alt="content" class="object-cover object-center h-full w-full transition-opacity duration-300 ease-in-out" src="{{ asset('img/Partner/16.png') }}">
+                    <img alt="content" class="object-cover object-center h-full w-full absolute top-0 left-0 opacity-0 transition-opacity duration-300 ease-in-out hover:opacity-100" src="{{ asset('img/Partner/8.png') }}">
+                </div>
+                <h2 class="title-font text-2xl font-medium text-gray-900 mt-6 mb-3">Rich Wellness</h2>
+                <p class="leading-relaxed text-base px-12">Williamsburg occupy sustainable snackwave gochujang. Pinterest cornhole brunch, slow-carb neutra irony.</p>
+                <button class="flex mx-auto mt-6 text-white bg-blue-500 border-0 py-2 px-5 focus:outline-none hover:bg-blue-600 rounded">Visit Page</button>
+            </div>
+            </div>
         </div>
     </section>
 @endsection
